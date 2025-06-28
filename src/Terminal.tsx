@@ -99,20 +99,8 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
       const textDecoder = new TextDecoder();
       
       // Get current graph path
-      const graphPath = (await logseq.App.getCurrentGraph())?.path;
-      
-      // Try to get git directory
-      let gitDir = null;
-      if (graphPath) {
-        try {
-          const runArgs = ['-C', graphPath, 'rev-parse', '--git-dir'];
-          const res = await logseq.Git.execCommand(runArgs);
-          gitDir = res.stdout.trim();
-        } catch (error) {
-          console.log('Git command failed:', error);
-        }
-      }
-      
+      const gitDir = (await logseq.App.getCurrentGraph())?.path;
+
       // ttydのWebSocketプロトコル ['tty'] を使用
       const ws = new WebSocket('ws://127.0.0.1:7681/ws', ['tty']);
       ws.binaryType = 'arraybuffer';
@@ -121,7 +109,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
         setIsConnected(true);
         setError(null);
         
-        // 認証メッセージを送信（公式と同じ形式）
         const authMsg = JSON.stringify({ 
           AuthToken: '', 
           columns: term.cols, 
@@ -129,11 +116,10 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
         });
         ws.send(textEncoder.encode(authMsg));
         
-        // Change directory to git directory if available, otherwise use graph path
-        const targetPath = gitDir || graphPath;
-        if (targetPath) {
+        // Change directory to graph path
+        if (gitDir) {
           setTimeout(() => {
-            const cdCommand = `cd "${targetPath}"\r`;
+            const cdCommand = `cd "${gitDir}"\r`;
             const payload = new Uint8Array(cdCommand.length * 3 + 1);
             payload[0] = '0'.charCodeAt(0); // Command.INPUT
             const stats = textEncoder.encodeInto(cdCommand, payload.subarray(1));
