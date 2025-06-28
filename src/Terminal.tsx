@@ -43,12 +43,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
     
     // Focus the terminal to capture key events
     term.focus();
-    console.log('Terminal opened and focused');
-
-    // Test if onData is working
-    term.onData(() => {
-      console.log('Terminal onData callback registered successfully');
-    });
 
     setTerminal(term);
 
@@ -73,7 +67,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
       ws.binaryType = 'arraybuffer';
       
       ws.onopen = () => {
-        console.log('[ttyd] websocket connection opened');
         setIsConnected(true);
         setError(null);
         
@@ -107,8 +100,7 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
         }
       };
 
-      ws.onclose = (event) => {
-        console.log(`[ttyd] websocket connection closed with code: ${event.code}`);
+      ws.onclose = () => {
         setIsConnected(false);
         term.writeln('\r\n\x1b[1;31mConnection closed\x1b[0m');
       };
@@ -141,7 +133,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
     } catch (error) {
       setError('Failed to connect to terminal');
       term.writeln('\x1b[31mFailed to connect to terminal\x1b[0m');
-      console.error('Terminal connection error:', error);
     }
   };
 
@@ -153,7 +144,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
 
   const handleTestInput = () => {
     if (terminal && websocket && websocket.readyState === WebSocket.OPEN) {
-      console.log('Test button clicked - sending ls command');
       // ttydバイナリプロトコル
       const textEncoder = new TextEncoder();
       const data = 'ls\r';
@@ -166,10 +156,8 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
 
   const handleContainerClick = () => {
     // Focus terminal when clicking anywhere in the container
-    console.log('Container clicked, focusing terminal');
     if (terminal) {
       terminal.focus();
-      console.log('Terminal focused, has focus:', terminal.hasSelection());
     }
   };
 
