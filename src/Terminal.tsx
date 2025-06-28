@@ -83,12 +83,17 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
 
   // Auto-reconnect when UI is shown if disconnected
   useEffect(() => {
-    if (terminal && !isConnected && shouldAutoReconnect) {
+    if (terminal && !isConnected && shouldAutoReconnect && websocket?.readyState === WebSocket.CLOSED) {
       connectToTtyd(terminal);
     }
-  }, [terminal, isConnected, shouldAutoReconnect]);
+  }, [terminal, isConnected, shouldAutoReconnect, websocket]);
 
   const connectToTtyd = async (term: Terminal) => {
+    // Prevent multiple connections
+    if (websocket?.readyState === WebSocket.CONNECTING || websocket?.readyState === WebSocket.OPEN) {
+      return;
+    }
+    
     try {
       const textEncoder = new TextEncoder();
       const textDecoder = new TextDecoder();
@@ -169,7 +174,7 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
       };
 
       
-      // 入力データの送信（公式と同じバイナリ形式）
+      // 入力データの送信
       term.onData(data => {      
         if (ws.readyState === WebSocket.OPEN) {
           const payload = new Uint8Array(data.length * 3 + 1);
@@ -212,7 +217,7 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
   return (
     <div className="terminal-container" onClick={handleContainerClick}>
       <div className="terminal-header">
-        <span>Terminal {isConnected ? '(Connected)' : '(Disconnected)'}</span>
+        <span>Git Terminal {isConnected ? '(Connected)' : '(Disconnected)'}</span>
         <div className="terminal-controls">
           {!isConnected && (
             <button className="reconnect-button" onClick={handleReconnect}>
