@@ -142,17 +142,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
     }
   };
 
-  const handleTestInput = () => {
-    if (terminal && websocket && websocket.readyState === WebSocket.OPEN) {
-      // ttydバイナリプロトコル
-      const textEncoder = new TextEncoder();
-      const data = 'ls\r';
-      const payload = new Uint8Array(data.length * 3 + 1);
-      payload[0] = '0'.charCodeAt(0); // Command.INPUT
-      const stats = textEncoder.encodeInto(data, payload.subarray(1));
-      websocket.send(payload.subarray(0, (stats.written as number) + 1));
-    }
-  };
 
   const handleContainerClick = () => {
     // Focus terminal when clicking anywhere in the container
@@ -166,11 +155,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
       <div className="terminal-header">
         <span>Terminal {isConnected ? '(Connected)' : '(Disconnected)'}</span>
         <div className="terminal-controls">
-          {isConnected && (
-            <button className="reconnect-button" onClick={handleTestInput}>
-              Test Input
-            </button>
-          )}
           {!isConnected && (
             <button className="reconnect-button" onClick={handleReconnect}>
               Reconnect
