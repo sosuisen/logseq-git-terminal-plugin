@@ -43,7 +43,21 @@ function main() {
     }
   });
 
-  document.getElementById('app')!.addEventListener('click', e => {
+  const appElement = document.getElementById('app')!;
+  appElement.addEventListener('click', e => {
+    e.stopPropagation();
+  });
+
+  // Prevent Logseq from capturing key events when terminal is focused
+  appElement.addEventListener('keydown', e => {
+    e.stopPropagation();
+  });
+  
+  appElement.addEventListener('keyup', e => {
+    e.stopPropagation();
+  });
+  
+  appElement.addEventListener('keypress', e => {
     e.stopPropagation();
   });
 

@@ -20,11 +20,24 @@
   border-bottom: 1px solid #404040;
 }
 
-.close-button {
+.terminal-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.close-button, .reconnect-button {
   background: none;
   border: none;
   color: #ffffff;
   cursor: pointer;
+  font-size: 12px;
+  padding: 4px 8px;
+  border-radius: 3px;
+  font-family: monospace;
+}
+
+.close-button {
   font-size: 18px;
   padding: 0;
   width: 20px;
@@ -36,14 +49,48 @@
 
 .close-button:hover {
   background-color: #ff5555;
-  border-radius: 3px;
+}
+
+.reconnect-button:hover {
+  background-color: #555555;
 }
 
 .terminal-content {
   flex: 1;
-  padding: 16px;
-  color: #ffffff;
-  font-family: monospace;
-  font-size: 14px;
+  display: flex;
+  flex-direction: column;
   background-color: #1e1e1e;
+  position: relative;
+}
+
+.error-message {
+  background-color: #ff5555;
+  color: #ffffff;
+  padding: 8px;
+  margin: 8px;
+  border-radius: 4px;
+  font-family: monospace;
+  font-size: 12px;
+}
+
+.xterm-container {
+  flex: 1;
+  padding: 8px;
+  cursor: text;
+}
+
+.xterm-container .xterm {
+  height: 100% !important;
+}
+
+.xterm-container .xterm-viewport {
+  overflow-y: auto;
+}
+
+.xterm-container .xterm-screen {
+  outline: none;
+}
+
+.terminal-container {
+  outline: none;
 }
