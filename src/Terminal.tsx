@@ -14,6 +14,7 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
   const [websocket, setWebsocket] = useState<WebSocket | null>(null);
   const [isConnected, setIsConnected] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [shouldAutoReconnect, setShouldAutoReconnect] = useState(true);
 
   useEffect(() => {
     if (!terminalRef.current) return;
@@ -65,10 +66,12 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
       resizeObserver.observe(terminalRef.current);
     }
 
+
     // Start ttyd and connect
     connectToTtyd(term);
 
     return () => {
+      setShouldAutoReconnect(false);
       window.removeEventListener('resize', handleResize);
       resizeObserver.disconnect();
       term.dispose();
@@ -77,6 +80,13 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
       }
     };
   }, []);
+
+  // Auto-reconnect when UI is shown if disconnected
+  useEffect(() => {
+    if (terminal && !isConnected && shouldAutoReconnect) {
+      connectToTtyd(terminal);
+    }
+  }, [terminal, isConnected, shouldAutoReconnect]);
 
   const connectToTtyd = async (term: Terminal) => {
     try {
@@ -123,6 +133,7 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
       ws.onclose = () => {
         setIsConnected(false);
         term.writeln('\r\n\x1b[1;31mConnection closed\x1b[0m');
+        logseq.hideMainUI();
       };
 
       ws.onerror = () => {
@@ -130,8 +141,9 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
         term.writeln('\r\n\x1b[1;31mConnection error\x1b[0m');
       };
 
+      
       // 入力データの送信（公式と同じバイナリ形式）
-      term.onData(data => {
+      term.onData(data => {      
         if (ws.readyState === WebSocket.OPEN) {
           const payload = new Uint8Array(data.length * 3 + 1);
           payload[0] = '0'.charCodeAt(0); // Command.INPUT

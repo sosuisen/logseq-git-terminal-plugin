@@ -7,6 +7,13 @@ import { SimpleCommandKeybinding } from '@logseq/libs/dist/LSPlugin'
 
 const openTerminal = () => {
   logseq.showMainUI();
+  // Focus terminal 0.5 second after UI is shown
+  setTimeout(() => {
+    const terminalElement = document.querySelector('.xterm-helper-textarea') as HTMLElement;
+    if (terminalElement) {
+      terminalElement.focus();
+    }
+  }, 500);
 }
 
 function main() {
