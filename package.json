@@ -1,6 +1,6 @@
 {
-  "name": "logseq-terminal-plugin",
-  "description": "A terminal plugin for Logseq with customizable keybindings",
+  "name": "logseq-git-terminal-plugin",
+  "description": "A git terminal plugin for Logseq",
   "version": "1.0.0",
   "type": "module",
   "main": "dist/index.html",
@@ -35,8 +35,8 @@
     "vite-plugin-logseq": "^1.1.2"
   },
   "logseq": {
-    "id": "logseq-terminal-plugin_terminal001",
-    "title": "Logseq Terminal Plugin",
+    "id": "logseq-git-terminal-plugin",
+    "title": "Git Terminal Plugin",
     "icon": "./icon.png"
   },
   "author": ""
