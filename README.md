@@ -1,6 +1,6 @@
 # Logseq Git Terminal Plugin
 
-This Logseq plugin connects to ttyd to open a terminal in the .git directory of your current Logseq graph. You can use git commands to operate the repository from this terminal.
+This Logseq plugin connects to ttyd to open a terminal in the working directory of your current Logseq graph. You can use git commands to operate the repository from this terminal.
 
 ![screen](img/screen.png)
 
