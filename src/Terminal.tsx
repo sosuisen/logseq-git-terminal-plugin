@@ -93,6 +93,21 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
       const textEncoder = new TextEncoder();
       const textDecoder = new TextDecoder();
       
+      // Get current graph path
+      const graphPath = (await logseq.App.getCurrentGraph())?.path;
+      
+      // Try to get git directory
+      let gitDir = null;
+      if (graphPath) {
+        try {
+          const runArgs = ['-C', graphPath, 'rev-parse', '--git-dir'];
+          const res = await logseq.Git.execCommand(runArgs);
+          gitDir = res.stdout.trim();
+        } catch (error) {
+          console.log('Git command failed:', error);
+        }
+      }
+      
       // ttydのWebSocketプロトコル ['tty'] を使用
       const ws = new WebSocket('ws://127.0.0.1:7681/ws', ['tty']);
       ws.binaryType = 'arraybuffer';
@@ -108,6 +123,18 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
           rows: term.rows 
         });
         ws.send(textEncoder.encode(authMsg));
+        
+        // Change directory to git directory if available, otherwise use graph path
+        const targetPath = gitDir || graphPath;
+        if (targetPath) {
+          setTimeout(() => {
+            const cdCommand = `cd "${targetPath}"\r`;
+            const payload = new Uint8Array(cdCommand.length * 3 + 1);
+            payload[0] = '0'.charCodeAt(0); // Command.INPUT
+            const stats = textEncoder.encodeInto(cdCommand, payload.subarray(1));
+            ws.send(payload.subarray(0, (stats.written as number) + 1));
+          }, 500);
+        }
         
       };
 
