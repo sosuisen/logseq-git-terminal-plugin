@@ -75,19 +75,22 @@
 
 .xterm-container {
   flex: 1;
-  padding: 8px;
+  padding: 0;
   cursor: text;
+  overflow: hidden;
 }
 
 .xterm-container .xterm {
   height: 100% !important;
+  width: 100% !important;
 }
 
 .xterm-container .xterm-viewport {
-  overflow-y: auto;
+  overflow: hidden !important;
 }
 
 .xterm-container .xterm-screen {
+  overflow: hidden !important;
   outline: none;
 }
 

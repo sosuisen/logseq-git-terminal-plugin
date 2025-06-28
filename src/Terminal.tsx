@@ -39,17 +39,39 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
     term.loadAddon(webLinksAddon);
     
     term.open(terminalRef.current);
-    fitAddon.fit();
     
-    // Focus the terminal to capture key events
-    term.focus();
+    // Fit terminal to container size
+    setTimeout(() => {
+      fitAddon.fit();
+      term.focus();
+    }, 100);
 
     setTerminal(term);
+
+    // Handle window resize to keep terminal fitted
+    const handleResize = () => {
+      if (fitAddon && term) {
+        setTimeout(() => fitAddon.fit(), 100);
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Watch for container size changes
+    const resizeObserver = new ResizeObserver(() => {
+      handleResize();
+    });
+    
+    if (terminalRef.current) {
+      resizeObserver.observe(terminalRef.current);
+    }
 
     // Start ttyd and connect
     connectToTtyd(term);
 
     return () => {
+      window.removeEventListener('resize', handleResize);
+      resizeObserver.disconnect();
       term.dispose();
       if (websocket) {
         websocket.close();

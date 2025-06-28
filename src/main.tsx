@@ -31,7 +31,7 @@ function main() {
     left: '50%',
     transform: 'translate(-50%, -50%)',
     width: '600px',
-    height: '400px',
+    height: '500px', // Extra 100px for title bar and padding
     backgroundColor: '#1e1e1e',
     border: '1px solid #333',
     borderRadius: '8px',
