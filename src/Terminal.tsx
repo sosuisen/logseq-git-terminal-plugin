@@ -43,7 +43,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
     // Fit terminal to container size
     setTimeout(() => {
       fitAddon.fit();
-      term.focus();
     }, 100);
 
     setTerminal(term);
@@ -100,7 +99,6 @@ export default function TerminalComponent({ onClose }: TerminalComponentProps) {
         });
         ws.send(textEncoder.encode(authMsg));
         
-        term.focus();
       };
 
       ws.onmessage = (event) => {
